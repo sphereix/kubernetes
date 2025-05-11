@@ -1,0 +1,12 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "ramnginx"
+
+serv:
+  name: ramsvc
+  type: NodePort
+  port: 80
+  nodeport: 30006
+
