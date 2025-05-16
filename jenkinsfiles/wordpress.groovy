@@ -32,7 +32,7 @@ spec:
       steps {
         checkout([$class: 'GitSCM',
           branches: [[name: '*/master']],
-          userRemoteConfigs: [[url: 'https://github.com/sugreevudu/kubernetes.git']]
+          userRemoteConfigs: [[url: 'https://github.com/sphereix/kubernetes.git']]
         ])
       }
     }
