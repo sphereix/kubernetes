@@ -16,23 +16,22 @@ spec:
     command:
     - cat
     tty: true
-    volumeMounts:
-    - name: kube-config
-      mountPath: /root/.kube
-  volumes:
-  - name: kube-config
-    secret:
-      secretName: kubeconfig-secret
 """
     }
   }
 
   stages {
+    stage('Verify kubectl') {
+      steps {
+        sh 'kubectl get nodes'
+      }
+    }
+
     stage('Checkout Repo') {
       steps {
         checkout([$class: 'GitSCM',
           branches: [[name: '*/master']],
-          userRemoteConfigs: [[url: 'https://github.com/sugreevudu/kubernetes.git']]
+          userRemoteConfigs: [[url: 'https://github.com/sphereix/kubernetes.git']]
         ])
       }
     }
