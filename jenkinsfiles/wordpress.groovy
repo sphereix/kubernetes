@@ -21,9 +21,10 @@ spec:
   }
 
   stages {
-    stage('Verify kubectl') {
+    stage('Check Container') {
       steps {
-        sh 'kubectl get nodes'
+        sh 'which kubectl || echo "kubectl not found"; echo "Running on pod: $HOSTNAME"'
+        sh 'kubectl version --client'
       }
     }
 
@@ -31,7 +32,7 @@ spec:
       steps {
         checkout([$class: 'GitSCM',
           branches: [[name: '*/master']],
-          userRemoteConfigs: [[url: 'https://github.com/sphereix/kubernetes.git']]
+          userRemoteConfigs: [[url: 'https://github.com/sugreevudu/kubernetes.git']]
         ])
       }
     }
