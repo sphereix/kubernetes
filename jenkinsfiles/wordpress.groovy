@@ -1,12 +1,11 @@
 pipeline {
   agent {
     kubernetes {
+      label 'jenkins-kubectl-agent'
+      defaultContainer 'kubectl'
       yaml """
 apiVersion: v1
 kind: Pod
-metadata:
-  labels:
-    some-label: kubectl
 spec:
   containers:
   - name: kubectl
@@ -15,23 +14,23 @@ spec:
     - cat
     tty: true
 """
-      defaultContainer 'kubectl'
     }
   }
 
   stages {
-    stage('git checkout') {
+    stage('Checkout') {
       steps {
         checkout([$class: 'GitSCM',
           branches: [[name: '*/master']],
-          userRemoteConfigs: [[url: 'https://github.com/sugreevudu/kubernetes.git']]
+          userRemoteConfigs: [[url: 'https://github.com/sphereix/kubernetes.git']]
         ])
       }
     }
 
-    stage('mysql deployment') {
+    stage('MySQL Deployment') {
       steps {
         sh '''
+          kubectl version --client
           kubectl apply -f wordpre-phpmysql-mysql-deployments/mysql-user-pass.yaml
           kubectl apply -f wordpre-phpmysql-mysql-deployments/mysql-db-url.yaml
           kubectl apply -f wordpre-phpmysql-mysql-deployments/mysql-root-pass.yaml
@@ -43,7 +42,7 @@ spec:
       }
     }
 
-    stage('php-myadmin-deployment') {
+    stage('phpMyAdmin Deployment') {
       steps {
         sh '''
           kubectl apply -f wordpre-phpmysql-mysql-deployments/phpmyadmin-deploy.yaml
@@ -52,7 +51,7 @@ spec:
       }
     }
 
-    stage('wordpress-deployment') {
+    stage('WordPress Deployment') {
       steps {
         sh '''
           kubectl apply -f wordpre-phpmysql-mysql-deployments/wordpress-deploy.yaml
