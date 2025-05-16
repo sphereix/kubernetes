@@ -6,6 +6,9 @@ pipeline {
       yaml """
 apiVersion: v1
 kind: Pod
+metadata:
+  labels:
+    jenkins: kubectl
 spec:
   containers:
   - name: kubectl
@@ -13,16 +16,23 @@ spec:
     command:
     - cat
     tty: true
+    volumeMounts:
+    - name: kube-config
+      mountPath: /root/.kube
+  volumes:
+  - name: kube-config
+    secret:
+      secretName: kubeconfig-secret
 """
     }
   }
 
   stages {
-    stage('Checkout') {
+    stage('Checkout Repo') {
       steps {
         checkout([$class: 'GitSCM',
           branches: [[name: '*/master']],
-          userRemoteConfigs: [[url: 'https://github.com/sphereix/kubernetes.git']]
+          userRemoteConfigs: [[url: 'https://github.com/sugreevudu/kubernetes.git']]
         ])
       }
     }
@@ -30,7 +40,6 @@ spec:
     stage('MySQL Deployment') {
       steps {
         sh '''
-          kubectl version --client
           kubectl apply -f wordpre-phpmysql-mysql-deployments/mysql-user-pass.yaml
           kubectl apply -f wordpre-phpmysql-mysql-deployments/mysql-db-url.yaml
           kubectl apply -f wordpre-phpmysql-mysql-deployments/mysql-root-pass.yaml
